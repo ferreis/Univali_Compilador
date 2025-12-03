@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="IDE:jar">
+    <output-path>$PROJECT_DIR$/IDE/out/artifacts/IDE_jar</output-path>
+    <root id="archive" name="IDE.jar">
+      <element id="module-output" name="IDE" />
+    </root>
+  </artifact>
+</component>
