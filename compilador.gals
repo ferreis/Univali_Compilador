@@ -1,0 +1,204 @@
+#Options
+GenerateScanner = true
+GenerateParser = true
+Language = Java
+ScannerName = Lexico
+ParserName = Sintatico
+SemanticName = Semantico
+Package = gals
+ScannerCaseSensitive = true
+ScannerTable = Compact
+Input = Stream
+Parser = SLR
+#RegularDefinitions
+
+#Tokens
+ID: [a-zA-Z_][a-zA-Z0-9_]*
+
+
+//COMENTARIO DE LINHA
+SINGLE_LINE_COMMENT: [/][/].*
+
+//COMENTARIO MÃLTIPLO
+MULTI_LINE_COMMENT: /\*([^\*]|[\r\n]|(\*+([^\*/]|[\r\n])))*\*+/ 
+
+
+//PALAVRAS RESERVADAS
+KEY_IF = ID: "if"
+KEY_ELSE = ID: "else"
+KEY_ELSEIF = ID: "elseif"
+KEY_FOR = ID: "for"
+KEY_DO = ID: "do"
+KEY_WHILE = ID: "while"
+KEY_RETURN = ID: "return"
+KEY_SWITCH = ID: "switch"
+KEY_CASE = ID: "case"
+
+KEY_INT = ID: "int"
+KEY_FLOAT = ID: "float"
+KEY_BOOL = ID: "bool"
+KEY_CHAR = ID: "char"
+KEY_STRING = ID: "string"
+KEY_INPUT = ID: "input"
+KEY_PRINT = ID: "print"
+KEY_VOID: "void"
+
+//OPERADORES ARITMÃTICOS
+KEY_ADD: \+
+KEY_SUB: "-"
+KEY_MUL: \*
+KEY_DIV: "/"
+KEY_MOD: "%"
+
+
+//OPERADORES RELACIONAIS
+MAIOR: ">"
+MENOR: "<"
+MAIOR_IGUAL: ">="
+MENOR_IGUAL: "<="
+IGUAL_RELACIONAL: "=="
+DIFERENTE: "!="
+IGUAL: "="
+
+//OPERADORES LÃGICOS
+AND: "&&"
+OR: "||"
+NOT: "!"
+
+//OPERADORES BIT A BIT
+BIT_SHIFT_RIGHT: ">>"
+BIT_SHIFT_LEFT: "<<"
+BIT_AND: "&"
+BIT_OR: "|"
+BIT_NOT: "~"
+BIT_XOR: "^"
+       
+//VALORES CONSTANTES
+INTEGER_DECIMAL: [0-9]+
+INTEGER_BINARY : [0]"b"[01]+
+INTEGER_HEX :[0]"x"[0-9a-fA-F]+
+FLOAT: [0-9]+ "." [0-9]+
+STRING: \"[^\"]*\"
+CHAR: ['].[']
+TRUE = ID: "true"
+FALSE = ID: "false"
+
+
+//DELIMITADORES E PONTUADORES
+DOT: "."
+COMMA: ","
+SEMICOLON: ";"
+COLON: ":"
+LEFT_BRACE: "{"
+RIGHT_BRACE: "}"
+LEFT_BRACKET: "["
+RIGHT_BRACKET: "]"
+LEFT_PARENTHESES: "("
+RIGHT_PARENTHESES: ")"
+
+
+:[\s\t\r\n\b]*
+
+
+
+#NonTerminals
+<cmd_list>
+<cmd>
+<declaracao_variavel>
+<lista_nomes>
+<tipo>
+<declaracao_vetor>
+<declaracao_vetor_declaracao>
+<variavel>
+<variavel_atri>
+<declaracao_funcao>
+<chamada_funcao>
+<exp_declara_funcao>
+<exp_chama_funcao>
+<atribuicao>
+<exp_atribuicao>
+<entrada_dados>
+<saida_dados>
+<for_statement>
+<while_statement>
+<do_while_statement>
+<if_statement>
+<elseif_statement>
+<else_statement>
+<bloco_instrucao>
+<exp>
+<exp0>
+<exp1>
+<exp2>
+<exp3>
+<exp4>
+<exp5>
+<exp6>
+<exp7>
+<exp8>
+<exp9>
+<exp10>
+<exp11>
+<exp12>
+<exp13>
+#Grammar
+//DECLARACAO DE VARIAVEIS
+<cmd_list> ::= <cmd_list> <cmd> | <cmd>;
+<cmd> ::= <declaracao_variavel> SEMICOLON | <for_statement> | <while_statement> | <do_while_statement> | <if_statement> |  <saida_dados> SEMICOLON | <atribuicao> SEMICOLON | <declaracao_funcao> |  <chamada_funcao> SEMICOLON| KEY_RETURN <exp> #44 SEMICOLON | SINGLE_LINE_COMMENT | MULTI_LINE_COMMENT;
+<declaracao_variavel> ::= <tipo> <lista_nomes> ;
+<lista_nomes> ::= <lista_nomes> COMMA <variavel> | <variavel> |  ID#2 IGUAL #8 <exp> #45 | ID#2 IGUAL #8  LEFT_BRACKET  <exp> #45 <exp_atribuicao> RIGHT_BRACKET  | ID#2 IGUAL #8 <entrada_dados>;
+<tipo> ::= KEY_INT#1 | KEY_FLOAT#1 | KEY_BOOL#1 | KEY_CHAR#1 | KEY_STRING#1 | KEY_VOID#1;
+
+<declaracao_vetor> ::= LEFT_BRACKET <exp> #18 RIGHT_BRACKET;
+<declaracao_vetor_declaracao>  ::= LEFT_BRACKET <exp> #9 RIGHT_BRACKET; 
+
+<variavel> ::= ID#2| ID#3 <declaracao_vetor_declaracao> ;
+<variavel_atri> ::= ID#6| ID#7 <declaracao_vetor>;
+
+//DECLARACAO DE FUNCOES
+<declaracao_funcao> ::= <tipo> ID#5 #10 LEFT_PARENTHESES  <exp_declara_funcao>  RIGHT_PARENTHESES #12 <bloco_instrucao> #52 | <tipo> LEFT_BRACKET RIGHT_BRACKET ID#5 #10 LEFT_PARENTHESES <exp_declara_funcao>  RIGHT_PARENTHESES #12 <bloco_instrucao> #52; 
+<chamada_funcao> ::= ID #13 LEFT_PARENTHESES  #10 <exp_chama_funcao>  RIGHT_PARENTHESES #15;
+<exp_declara_funcao> ::= <exp_declara_funcao> COMMA <tipo> ID#4 | <tipo> ID#4 | <exp_declara_funcao> COMMA <tipo> ID LEFT_BRACKET RIGHT_BRACKET#4 | <tipo> ID LEFT_BRACKET RIGHT_BRACKET#4 | î;
+<exp_chama_funcao> ::= <exp_chama_funcao> COMMA <exp> #14| <exp> #14 | î;
+//ATRIBUICAO
+<atribuicao> ::=  <variavel_atri> IGUAL <exp>  #45 #11| <variavel_atri> IGUAL  LEFT_BRACKET  <exp> #45 <exp_atribuicao> RIGHT_BRACKET #11| <variavel_atri> IGUAL <entrada_dados> #11 ;
+<exp_atribuicao> ::= COMMA <exp> #45 <exp_atribuicao> | COMMA <exp> #45 ;
+
+
+//ENTRADA DE DADOS e SAIDA DE DADOS
+<entrada_dados> ::= KEY_INPUT LEFT_PARENTHESES RIGHT_PARENTHESES #100;
+<saida_dados> ::= KEY_PRINT LEFT_PARENTHESES <exp> #101 RIGHT_PARENTHESES;
+
+
+//LaÃ§os de RepetiÃ§ÃŖo
+<for_statement> ::= KEY_FOR LEFT_PARENTHESES <declaracao_variavel> SEMICOLON #119 <exp> #43 #120 SEMICOLON <atribuicao> RIGHT_PARENTHESES  #121 <bloco_instrucao> #122;  
+<while_statement> ::= #114 KEY_WHILE LEFT_PARENTHESES <exp> #43 RIGHT_PARENTHESES #115 <bloco_instrucao> #116;  
+<do_while_statement> ::= KEY_DO #117 <bloco_instrucao> KEY_WHILE LEFT_PARENTHESES <exp> #43 RIGHT_PARENTHESES #118; 
+
+//Desvio condicional
+<if_statement> ::= KEY_IF LEFT_PARENTHESES <exp> #43 RIGHT_PARENTHESES #110 <bloco_instrucao> <elseif_statement> <else_statement> #113;
+<elseif_statement> ::= KEY_ELSEIF LEFT_PARENTHESES <exp> #43 #111 RIGHT_PARENTHESES <bloco_instrucao> | î ;
+<else_statement> ::=  #112 KEY_ELSE  <bloco_instrucao> | î ;
+
+//BLOCOS DE INSTRUcao
+<bloco_instrucao> ::= LEFT_BRACE #50 <cmd_list> RIGHT_BRACE#51 |  LEFT_BRACE #50 RIGHT_BRACE #51;
+
+
+//Operacoes
+<exp>  ::= #17 <exp0> #16;
+<exp0> ::= <exp0> OR <exp1> #30| <exp1>;
+<exp1> ::= <exp1> AND <exp2> #31| <exp2>;
+<exp2> ::= <exp2> BIT_OR <exp3> #32 | <exp3>;
+<exp3> ::= <exp3> BIT_XOR <exp4> #33| <exp4>;
+<exp4> ::= <exp4> BIT_AND <exp5> #34| <exp5>;
+<exp5> ::= <exp5> MAIOR <exp6> #70 | <exp5> MENOR <exp6> #71 | <exp5> MAIOR_IGUAL <exp6> #72 | <exp5> MENOR_IGUAL <exp6> #73 | <exp5> IGUAL_RELACIONAL <exp6> #74 | <exp5> DIFERENTE <exp6> #75 | <exp6>;
+<exp6> ::= <exp6> BIT_SHIFT_RIGHT <exp7> #80 | <exp6> BIT_SHIFT_LEFT <exp7> #81 | <exp7>;
+<exp7> ::= <exp7> KEY_ADD <exp8> #37 | <exp8>;
+<exp8> ::= <exp8> KEY_SUB <exp9> #38 | <exp9>;
+<exp9> ::= <exp9> KEY_MUL <exp10> #39 | <exp10>;
+<exp10> ::= <exp10> KEY_DIV <exp11> #40 | <exp11>;
+<exp11> ::= <exp11> KEY_MOD <exp12> #41 | <exp12>;
+<exp12> ::= KEY_SUB <exp13> #90 | BIT_NOT <exp13> #91 | NOT <exp13> #92 | <exp13>;
+<exp13> ::= INTEGER_DECIMAL #20 | INTEGER_BINARY #21 | INTEGER_HEX #22 | FLOAT #23 | ID #24 | ID #25 <declaracao_vetor> | STRING #26 | CHAR #27 | LEFT_PARENTHESES <exp> RIGHT_PARENTHESES | <chamada_funcao> #28 | TRUE #29 | FALSE #29;
+
+
